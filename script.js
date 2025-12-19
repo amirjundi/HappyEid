@@ -142,29 +142,84 @@ document.head.appendChild(sparkleStyle);
 
 // ===== Touch Trail Effect for Mobile =====
 let lastTouchTime = 0;
-const touchTrailThrottle = 30; // ms between particles
+const touchTrailThrottle = 25; // ms between particles when moving
+let touchPositions = {}; // Store current touch positions
+let continuousSpawnInterval = null;
 
 function initTouchTrail() {
-    // Touch move - create trailing particles
-    document.addEventListener('touchmove', (e) => {
-        const now = Date.now();
-        if (now - lastTouchTime < touchTrailThrottle) return;
-        lastTouchTime = now;
-
-        // Get all touch points
-        for (let i = 0; i < e.touches.length; i++) {
-            const touch = e.touches[i];
-            createTouchTrailParticle(touch.clientX, touch.clientY);
-        }
-    }, { passive: true });
-
-    // Touch start - create burst effect
+    // Touch start - create burst and start continuous spawning
     document.addEventListener('touchstart', (e) => {
         for (let i = 0; i < e.touches.length; i++) {
             const touch = e.touches[i];
+            touchPositions[touch.identifier] = { x: touch.clientX, y: touch.clientY };
             createTouchBurst(touch.clientX, touch.clientY);
         }
+        startContinuousSpawn();
     }, { passive: true });
+
+    // Touch move - update positions and create trailing particles
+    document.addEventListener('touchmove', (e) => {
+        const now = Date.now();
+
+        for (let i = 0; i < e.touches.length; i++) {
+            const touch = e.touches[i];
+            touchPositions[touch.identifier] = { x: touch.clientX, y: touch.clientY };
+
+            // Create extra particles when moving
+            if (now - lastTouchTime >= touchTrailThrottle) {
+                createTouchTrailParticle(touch.clientX, touch.clientY);
+            }
+        }
+
+        if (now - lastTouchTime >= touchTrailThrottle) {
+            lastTouchTime = now;
+        }
+    }, { passive: true });
+
+    // Touch end - remove touch positions and stop spawning if no touches left
+    document.addEventListener('touchend', (e) => {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            delete touchPositions[e.changedTouches[i].identifier];
+        }
+
+        if (Object.keys(touchPositions).length === 0) {
+            stopContinuousSpawn();
+        }
+    }, { passive: true });
+
+    // Touch cancel - same as touch end
+    document.addEventListener('touchcancel', (e) => {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            delete touchPositions[e.changedTouches[i].identifier];
+        }
+
+        if (Object.keys(touchPositions).length === 0) {
+            stopContinuousSpawn();
+        }
+    }, { passive: true });
+}
+
+// Continuous particle spawning while finger is on screen
+function startContinuousSpawn() {
+    if (continuousSpawnInterval) return;
+
+    continuousSpawnInterval = setInterval(() => {
+        const positions = Object.values(touchPositions);
+        positions.forEach(pos => {
+            // Spawn 2-3 particles per interval at each touch point
+            const particleCount = 2 + Math.floor(Math.random() * 2);
+            for (let i = 0; i < particleCount; i++) {
+                createTouchTrailParticle(pos.x, pos.y);
+            }
+        });
+    }, 50); // Spawn particles every 50ms
+}
+
+function stopContinuousSpawn() {
+    if (continuousSpawnInterval) {
+        clearInterval(continuousSpawnInterval);
+        continuousSpawnInterval = null;
+    }
 }
 
 function createTouchTrailParticle(x, y) {
