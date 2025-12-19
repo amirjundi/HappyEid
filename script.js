@@ -311,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallax();
     initSparkles();
     initCardEffect();
+    initTouchTrail(); // Mobile touch trail with stars and fire
     // Uncomment below for subtle background color animation
     // initBackgroundShift();
 
