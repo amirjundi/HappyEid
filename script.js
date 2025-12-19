@@ -106,9 +106,12 @@ sparkleStyle.textContent = `
             opacity: 1;
             transform: translate(-50%, -50%) scale(1) rotate(0deg);
         }
+        50% {
+            opacity: 0.8;
+        }
         100% {
             opacity: 0;
-            transform: translate(-50%, -50%) scale(0) rotate(180deg);
+            transform: translate(-50%, -50%) scale(0.2) rotate(360deg);
         }
     }
     
@@ -117,9 +120,12 @@ sparkleStyle.textContent = `
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
+        40% {
+            opacity: 0.9;
+        }
         100% {
             opacity: 0;
-            transform: translate(-50%, calc(-50% - 40px)) scale(0.3);
+            transform: translate(-50%, calc(-50% - 80px)) scale(0.2);
         }
     }
     
@@ -127,7 +133,7 @@ sparkleStyle.textContent = `
         position: fixed;
         pointer-events: none;
         z-index: 9998;
-        animation: touch-trail-fade 0.8s ease-out forwards;
+        animation: touch-trail-fade 1.5s ease-out forwards;
     }
     
     .touch-fire {
@@ -135,7 +141,7 @@ sparkleStyle.textContent = `
         pointer-events: none;
         z-index: 9997;
         border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        animation: touch-fire-rise 0.6s ease-out forwards;
+        animation: touch-fire-rise 1.2s ease-out forwards;
     }
 `;
 document.head.appendChild(sparkleStyle);
@@ -267,7 +273,7 @@ function createTouchStar(x, y) {
     `;
 
     document.body.appendChild(star);
-    setTimeout(() => star.remove(), 800);
+    setTimeout(() => star.remove(), 1500);
 }
 
 function createTouchFire(x, y) {
@@ -298,26 +304,26 @@ function createTouchFire(x, y) {
     `;
 
     document.body.appendChild(fire);
-    setTimeout(() => fire.remove(), 600);
+    setTimeout(() => fire.remove(), 1200);
 }
 
 function createTouchBurst(x, y) {
-    const burstCount = 12;
+    const burstCount = 20; // More particles in burst
 
     for (let i = 0; i < burstCount; i++) {
         setTimeout(() => {
-            const angle = (360 / burstCount) * i;
-            const distance = 20 + Math.random() * 15;
+            const angle = (360 / burstCount) * i + (Math.random() - 0.5) * 30; // Add randomness to angle
+            const distance = 50 + Math.random() * 50; // Spread much wider (50-100px)
             const rad = angle * (Math.PI / 180);
             const targetX = x + Math.cos(rad) * distance;
             const targetY = y + Math.sin(rad) * distance;
 
-            if (Math.random() > 0.5) {
+            if (Math.random() > 0.4) {
                 createTouchStar(targetX, targetY);
             } else {
                 createTouchFire(targetX, targetY);
             }
-        }, i * 20);
+        }, i * 15); // Faster spawn for more dramatic effect
     }
 }
 
