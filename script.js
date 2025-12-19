@@ -101,31 +101,49 @@ sparkleStyle.textContent = `
         }
     }
     
-    @keyframes touch-trail-fade {
+    @keyframes touch-star-float {
         0% {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1) rotate(0deg);
         }
+        20% {
+            opacity: 1;
+            transform: translate(calc(-50% + var(--sway, 10px)), calc(-50% - 30px)) scale(1.1) rotate(72deg);
+        }
         50% {
-            opacity: 0.8;
+            opacity: 1;
+            transform: translate(calc(-50% - var(--sway, 10px)), calc(-50% - 60px)) scale(1) rotate(180deg);
+        }
+        70% {
+            opacity: 0.9;
+            transform: translate(calc(-50% + var(--sway, 5px)), calc(-50% - 90px)) scale(0.9) rotate(270deg);
         }
         100% {
             opacity: 0;
-            transform: translate(-50%, -50%) scale(0.2) rotate(360deg);
+            transform: translate(-50%, calc(-50% - 120px)) scale(0.5) rotate(360deg);
         }
     }
     
-    @keyframes touch-fire-rise {
+    @keyframes touch-fire-float {
         0% {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
-        40% {
+        30% {
+            opacity: 1;
+            transform: translate(-50%, calc(-50% - 30px)) scale(1.1);
+        }
+        60% {
             opacity: 0.9;
+            transform: translate(-50%, calc(-50% - 60px)) scale(0.9);
+        }
+        80% {
+            opacity: 0.6;
+            transform: translate(-50%, calc(-50% - 80px)) scale(0.6);
         }
         100% {
             opacity: 0;
-            transform: translate(-50%, calc(-50% - 80px)) scale(0.2);
+            transform: translate(-50%, calc(-50% - 100px)) scale(0.3);
         }
     }
     
@@ -133,7 +151,7 @@ sparkleStyle.textContent = `
         position: fixed;
         pointer-events: none;
         z-index: 9998;
-        animation: touch-trail-fade 1.5s ease-out forwards;
+        animation: touch-star-float 2.5s ease-out forwards;
     }
     
     .touch-fire {
@@ -141,7 +159,7 @@ sparkleStyle.textContent = `
         pointer-events: none;
         z-index: 9997;
         border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        animation: touch-fire-rise 1.2s ease-out forwards;
+        animation: touch-fire-float 2s ease-out forwards;
     }
 `;
 document.head.appendChild(sparkleStyle);
@@ -270,10 +288,11 @@ function createTouchStar(x, y) {
         box-shadow: 0 0 ${size}px hsl(${hue}, 100%, 60%),
                     0 0 ${size * 2}px hsl(${hue}, 100%, 40%);
         filter: blur(0.5px);
+        --sway: ${5 + Math.random() * 15}px;
     `;
 
     document.body.appendChild(star);
-    setTimeout(() => star.remove(), 1500);
+    setTimeout(() => star.remove(), 2500);
 }
 
 function createTouchFire(x, y) {
@@ -304,7 +323,7 @@ function createTouchFire(x, y) {
     `;
 
     document.body.appendChild(fire);
-    setTimeout(() => fire.remove(), 1200);
+    setTimeout(() => fire.remove(), 2000);
 }
 
 function createTouchBurst(x, y) {
